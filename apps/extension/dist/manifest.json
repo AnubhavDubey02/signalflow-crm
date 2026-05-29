@@ -11,6 +11,8 @@
   "host_permissions": [
     "https://web.whatsapp.com/*",
     "https://api.mrhomes.com/*",
+    "https://signalflow-crm.vercel.app/*",
+    "https://mrhomes-crm.vercel.app/*",
     "http://localhost:3000/*"
   ],
   "background": {
@@ -20,7 +22,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/index.tsx-loader-x-E7brWv.js"
+        "assets/index.tsx-loader-D7VRFBx1.js"
       ],
       "matches": [
         "https://web.whatsapp.com/*"
@@ -31,6 +33,7 @@
         "assets/auth-sync.ts-DlkIQdV6.js"
       ],
       "matches": [
+        "https://signalflow-crm.vercel.app/*",
         "https://mrhomes-crm.vercel.app/*",
         "http://localhost:3000/*"
       ]
@@ -45,15 +48,16 @@
         "https://web.whatsapp.com/*"
       ],
       "resources": [
-        "assets/Sidebar-C_cUtnPJ.js",
-        "assets/index.tsx-CaoVMRof.js"
+        "assets/Sidebar-BkwqlXGi.js",
+        "assets/index.tsx-C7_lq3HR.js"
       ],
       "use_dynamic_url": false
     },
     {
       "matches": [
         "http://localhost:3000/*",
-        "https://mrhomes-crm.vercel.app/*"
+        "https://mrhomes-crm.vercel.app/*",
+        "https://signalflow-crm.vercel.app/*"
       ],
       "resources": [
         "assets/auth-sync.ts-DlkIQdV6.js"

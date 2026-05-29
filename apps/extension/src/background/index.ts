@@ -13,12 +13,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.type === 'FORCE_SYNC') {
     chrome.tabs.query({ url: [
+      "https://signalflow-crm.vercel.app/*",
       "https://mrhomes-crm.vercel.app/*",
       "http://localhost:3000/*"
     ]}, (tabs) => {
       if (!tabs || tabs.length === 0) {
-        chrome.tabs.create({ url: 'https://mrhomes-crm.vercel.app/' }, () => {
-          sendResponse({ success: false, error: 'No open CRM tab found. Opened mrhomes-crm.vercel.app - please log in.' });
+        chrome.tabs.create({ url: 'https://signalflow-crm.vercel.app/' }, () => {
+          sendResponse({ success: false, error: 'No open CRM tab found. Opened signalflow-crm.vercel.app - please log in.' });
         });
         return;
       }
@@ -77,7 +78,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'ANALYZE' || request.type === 'SYNC' || request.type === 'RECOMMENDATIONS') {
     chrome.storage.local.get(['supabase_token', 'crm_domain'], async (result) => {
       const token = result.supabase_token;
-      const crmDomain = result.crm_domain || 'https://mrhomes-crm.vercel.app';
+      const crmDomain = result.crm_domain || 'https://signalflow-crm.vercel.app';
       
       let url = '';
       let options: RequestInit = {

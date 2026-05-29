@@ -11,6 +11,8 @@
   "host_permissions": [
     "https://web.whatsapp.com/*",
     "https://api.mrhomes.com/*",
+    "https://signalflow-crm.vercel.app/*",
+    "https://mrhomes-crm.vercel.app/*",
     "http://localhost:3000/*"
   ],
   "background": {
@@ -24,6 +26,7 @@
     },
     {
       "matches": [
+        "https://signalflow-crm.vercel.app/*",
         "https://mrhomes-crm.vercel.app/*",
         "http://localhost:3000/*"
       ],

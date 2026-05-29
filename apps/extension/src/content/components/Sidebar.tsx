@@ -30,7 +30,7 @@ export default function Sidebar() {
     tokenPresent: false,
     userEmail: 'Unknown',
     lastSyncTime: 'Never',
-    crmDomain: 'https://mrhomes-crm.vercel.app'
+    crmDomain: 'https://signalflow-crm.vercel.app'
   });
 
   // App States
@@ -58,7 +58,7 @@ export default function Sidebar() {
           tokenPresent: !!result.supabase_token,
           userEmail: result.user_email || 'Unknown',
           lastSyncTime: result.last_sync_time || 'Never',
-          crmDomain: result.crm_domain || 'https://mrhomes-crm.vercel.app'
+          crmDomain: result.crm_domain || 'https://signalflow-crm.vercel.app'
         });
       });
     };
@@ -239,7 +239,7 @@ export default function Sidebar() {
               tokenPresent: !!result.supabase_token,
               userEmail: result.user_email || 'Unknown',
               lastSyncTime: result.last_sync_time || 'Never',
-              crmDomain: result.crm_domain || 'https://mrhomes-crm.vercel.app'
+              crmDomain: result.crm_domain || 'https://signalflow-crm.vercel.app'
             });
           });
         } else {
