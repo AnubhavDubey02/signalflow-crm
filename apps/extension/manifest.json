@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "SignalFlow CRM Intelligence",
+  "version": "0.1.0",
+  "description": "Mr Homes WhatsApp Extraction Tool",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://api.mrhomes.com/*",
+    "http://localhost:3000/*"
+  ],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["src/content/index.tsx"]
+    },
+    {
+      "matches": [
+        "https://mrhomes-crm.vercel.app/*",
+        "http://localhost:3000/*"
+      ],
+      "js": ["src/content/auth-sync.ts"]
+    }
+  ],
+  "action": {
+    "default_title": "SignalFlow"
+  }
+}
