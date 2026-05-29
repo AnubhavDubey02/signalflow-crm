@@ -1,0 +1,14 @@
+{
+  "name": "signalflow-crm-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/extension",
+    "apps/web"
+  ],
+  "scripts": {
+    "web:dev": "npm run dev --workspace=apps/web",
+    "web:build": "npm run build --workspace=apps/web",
+    "ext:dev": "npm run dev --workspace=apps/extension",
+    "ext:build": "npm run build --workspace=apps/extension"
+  }
+}
