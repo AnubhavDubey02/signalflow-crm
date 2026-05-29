@@ -246,7 +246,7 @@ export class WhatsAppParser {
   }
 
   // Message Extraction
-  public static extractMessages(limit: number = 20): ParsedMessage[] {
+  public static extractMessages(limit: number = 200): ParsedMessage[] {
     const leadName = this.getActiveLeadName();
     const { nodes } = this.getActiveSelectorAndNodes();
     

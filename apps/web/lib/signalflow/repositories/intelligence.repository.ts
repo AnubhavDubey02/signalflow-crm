@@ -40,6 +40,19 @@ export class IntelligenceRepository {
       leadId = existingLead.id;
     }
 
+    // Map detailed occupant types to the basic database enum values to avoid CHECK constraint violations
+    let dbOccupantType = intelligence.occupantType;
+    if (dbOccupantType) {
+      const upper = dbOccupantType.toUpperCase();
+      if (upper === 'WORKING_PROFESSIONALS' || upper === 'STUDENTS' || upper === 'BACHELOR') {
+        dbOccupantType = 'BACHELOR' as any;
+      } else if (upper === 'FAMILY' || upper === 'AIRBNB_OPERATORS') {
+        dbOccupantType = 'FAMILY' as any;
+      } else if (upper === 'COUPLE') {
+        dbOccupantType = 'COUPLE' as any;
+      }
+    }
+
     // 2. Upsert Intelligence
     // Converting camelCase TS to snake_case DB
     const dbPayload = {
@@ -53,7 +66,7 @@ export class IntelligenceRepository {
       preferred_sectors: intelligence.preferredSectors,
       landmarks: intelligence.landmarks,
       furnishing: intelligence.furnishing,
-      occupant_type: intelligence.occupantType,
+      occupant_type: dbOccupantType,
       move_in_timeline: intelligence.moveInTimeline,
       lead_temperature: intelligence.leadTemperature,
       last_chat_snapshot: intelligence.lastChatSnapshot,

@@ -12,28 +12,29 @@ export const SignalFlowTaskSchema = z.object({
   dueDate: z.string().datetime(), // ISO string
 });
 
-export const PropertyTypeEnum = z.enum(['STUDIO', '1BHK', '2BHK', '3BHK', '4BHK', 'PLOT', 'COMMERCIAL', 'PG', 'CO_LIVING']);
+export const PropertyTypeEnum = z.enum(['1RK', 'STUDIO', '1BHK', '2BHK', '3BHK', '4BHK', 'BUILDER_FLOOR', 'VILLA', 'COMMERCIAL_SHOP', 'OFFICE', 'PLOT', 'COMMERCIAL', 'PG', 'CO_LIVING']);
 
 // Updated Schema based on Benchmark findings
 export const LeadIntelligenceSchema = z.object({
   transactionType: z.enum(['RENT', 'BUY']).default('RENT'),
-  requirementSummary: z.string().nullable(),
-  lastChatSnapshot: z.array(ChatMessageSchema).nullable(), // Stored to preserve context
-  propertyTypes: z.array(PropertyTypeEnum).min(1).default(['1BHK']), // Changed from string to array
-  budgetMin: z.number().int().positive().nullable(),
-  budgetMax: z.number().int().positive().nullable(),
-  preferredSectors: z.array(z.string()),
-  landmarks: z.array(z.string()).default([]), // Added based on "Near rapid metro" findings
-  furnishing: z.enum(['FULLY', 'SEMI', 'UNFURNISHED']).nullable(),
-  occupantType: z.enum(['BACHELOR', 'FAMILY', 'COUPLE']).nullable(),
-  moveInTimeline: z.string().nullable(),
-  leadTemperature: z.enum(['HOT', 'WARM', 'COLD']),
-  nextAction: SignalFlowTaskSchema.nullable()
+  requirementSummary: z.string().nullable().default(null),
+  requirementHistory: z.array(z.string()).default([]), // Added for requirement evolution
+  lastChatSnapshot: z.array(ChatMessageSchema).nullable().default(null), // Stored to preserve context
+  propertyTypes: z.array(PropertyTypeEnum).nullable().transform(val => val ?? []).default([]),
+  budgetMin: z.number().int().positive().nullable().default(null),
+  budgetMax: z.number().int().positive().nullable().default(null),
+  preferredSectors: z.array(z.string()).nullable().transform(val => val ?? []).default([]),
+  landmarks: z.array(z.string()).nullable().transform(val => val ?? []).default([]),
+  furnishing: z.enum(['FULLY', 'SEMI', 'UNFURNISHED']).nullable().default(null),
+  occupantType: z.enum(['BACHELOR', 'FAMILY', 'COUPLE', 'WORKING_PROFESSIONALS', 'STUDENTS', 'AIRBNB_OPERATORS']).nullable().default(null),
+  moveInTimeline: z.string().nullable().default(null),
+  leadTemperature: z.enum(['HOT', 'WARM', 'COLD']).nullable().transform(val => val ?? 'COLD').default('COLD'),
+  nextAction: SignalFlowTaskSchema.nullable().default(null)
 });
 
 export const AnalysisRequestSchema = z.object({
   whatsappPhone: z.string().min(10, 'Invalid phone number format'),
-  chatPayload: z.array(ChatMessageSchema).min(1, 'Chat payload cannot be empty').max(200, 'Payload too large'),
+  chatPayload: z.array(ChatMessageSchema).min(1, 'Chat payload cannot be empty').max(500, 'Payload too large'),
 });
 
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;

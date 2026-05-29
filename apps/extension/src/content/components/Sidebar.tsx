@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WhatsAppParser, ParsedMessage, Diagnostics } from '../whatsapp-parser';
 import { 
   User, MessageSquare, Activity, Shield, Cpu, Layers, Check, 
@@ -76,7 +76,7 @@ export default function Sidebar() {
         setLeadName(name);
 
         if (name) {
-          const msgs = WhatsAppParser.extractMessages(20);
+          const msgs = WhatsAppParser.extractMessages(200);
           setMessages((prev) => JSON.stringify(prev) !== JSON.stringify(msgs) ? msgs : prev);
         } else {
           setMessages([]);
