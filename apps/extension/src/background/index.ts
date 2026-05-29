@@ -12,11 +12,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.type === 'FORCE_SYNC') {
+    console.log("[FORCE_SYNC] Initiated");
     chrome.tabs.query({ url: [
       "https://signalflow-crm.vercel.app/*",
       "https://mrhomes-crm.vercel.app/*",
       "http://localhost:3000/*"
     ]}, (tabs) => {
+      console.log("[FORCE_SYNC] Tabs query returned: ", JSON.stringify(tabs?.map(t => ({ id: t.id, url: t.url, status: t.status, title: t.title }))));
+      
       if (!tabs || tabs.length === 0) {
         chrome.tabs.create({ url: 'https://signalflow-crm.vercel.app/' }, () => {
           sendResponse({ success: false, error: 'No open CRM tab found. Opened signalflow-crm.vercel.app - please log in.' });
@@ -25,8 +28,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
       
       const tab = tabs[0];
+      console.log("[FORCE_SYNC] Selected tabId:", tab.id);
+      console.log("[FORCE_SYNC] Selected tab URL:", tab.url);
+      console.log("[FORCE_SYNC] Selected tab status:", tab.status);
+      
       if (tab.id) {
-        chrome.scripting.executeScript({
+        const executeParams = {
           target: { tabId: tab.id },
           func: () => {
             try {
@@ -52,22 +59,36 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
               return { success: false, error: e.message };
             }
           }
-        }, (results) => {
-          if (chrome.runtime.lastError) {
-            sendResponse({ success: false, error: chrome.runtime.lastError.message });
-            return;
-          }
-          if (results && results[0] && results[0].result) {
-            const res = results[0].result as any;
-            if (res.success) {
-              sendResponse({ success: true, message: `Successfully synced session for ${res.email}` });
-            } else {
-              sendResponse({ success: false, error: res.error });
+        };
+        
+        console.log("[FORCE_SYNC] Exact chrome.scripting.executeScript parameters:", JSON.stringify({
+          tabId: executeParams.target.tabId,
+          hasFunc: typeof executeParams.func === 'function'
+        }));
+        
+        try {
+          chrome.scripting.executeScript(executeParams, (results) => {
+            if (chrome.runtime.lastError) {
+              console.error("[FORCE_SYNC] chrome.runtime.lastError detected:", chrome.runtime.lastError.message);
+              sendResponse({ success: false, error: chrome.runtime.lastError.message });
+              return;
             }
-          } else {
-            sendResponse({ success: false, error: 'Script execution failed.' });
-          }
-        });
+            if (results && results[0] && results[0].result) {
+              const res = results[0].result as any;
+              if (res.success) {
+                sendResponse({ success: true, message: `Successfully synced session for ${res.email}` });
+              } else {
+                sendResponse({ success: false, error: res.error });
+              }
+            } else {
+              sendResponse({ success: false, error: 'Script execution failed.' });
+            }
+          });
+        } catch (scriptError: any) {
+          console.error("[FORCE_SYNC] Exception caught calling executeScript:", scriptError);
+          console.error("[FORCE_SYNC] Stack trace:", scriptError.stack);
+          sendResponse({ success: false, error: `executeScript threw: ${scriptError.message}` });
+        }
       } else {
         sendResponse({ success: false, error: 'Invalid active tab ID' });
       }

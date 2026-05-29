@@ -10,5 +10,8 @@
     "web:build": "npm run build --workspace=apps/web",
     "ext:dev": "npm run dev --workspace=apps/extension",
     "ext:build": "npm run build --workspace=apps/extension"
+  },
+  "dependencies": {
+    "ws": "^8.21.0"
   }
 }

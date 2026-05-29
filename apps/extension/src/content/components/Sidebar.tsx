@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { WhatsAppParser, ParsedMessage, Diagnostics } from '../whatsapp-parser';
 import { 
   User, MessageSquare, Activity, Shield, Cpu, Layers, Check, 
@@ -42,6 +42,7 @@ export default function Sidebar() {
   const [leadId, setLeadId] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [apiDebugInfo, setApiDebugInfo] = useState<{
     url: string;
     method: string;
@@ -121,6 +122,7 @@ export default function Sidebar() {
       setStatus('ANALYZING');
       setError(null);
       setApiDebugInfo(null);
+      setSuccessMessage(null);
 
       const chatPayload = messages.map(m => ({
         sender: m.sender,
@@ -153,6 +155,8 @@ export default function Sidebar() {
           setStatus('PREVIEW');
         } else {
           console.log("STEP 5 RESPONSE RECEIVED, DATA:", response.data);
+          setError(null);
+          setApiDebugInfo(null);
           setIntelligence(response.data.data);
           setStatus('REVIEW');
           console.log("STEP 6 REVIEW STATE");
@@ -172,6 +176,7 @@ export default function Sidebar() {
       setStatus('SYNCING');
       setError(null);
       setApiDebugInfo(null);
+      setSuccessMessage(null);
 
       chrome.runtime.sendMessage({
         type: 'SYNC',
@@ -197,6 +202,8 @@ export default function Sidebar() {
           setStatus('REVIEW');
         } else {
           console.log("SYNC STEP 3: API SUCCESS, DATA:", response.data);
+          setError(null);
+          setApiDebugInfo(null);
           const syncedLeadId = response.data.leadId;
           setLeadId(syncedLeadId);
           
@@ -228,6 +235,14 @@ export default function Sidebar() {
   const handleForceSync = () => {
     try {
       setError(null);
+      setApiDebugInfo(null);
+      setSuccessMessage(null);
+      
+      if (authDetails.tokenPresent) {
+        setSuccessMessage("Session already synced.");
+        return;
+      }
+      
       chrome.runtime.sendMessage({ type: 'FORCE_SYNC' }, (response) => {
         if (chrome.runtime.lastError) {
           setError(chrome.runtime.lastError.message || 'Background worker inactive');
@@ -241,6 +256,7 @@ export default function Sidebar() {
               lastSyncTime: result.last_sync_time || 'Never',
               crmDomain: result.crm_domain || 'https://signalflow-crm.vercel.app'
             });
+            setSuccessMessage("Session synced successfully.");
           });
         } else {
           setError(response?.error || 'Failed to force sync. Please open the CRM tab and verify you are logged in.');
@@ -491,7 +507,7 @@ export default function Sidebar() {
                     lineHeight: 1
                   }}
                 >
-                  ×
+                  Ã—
                 </button>
               </div>
 
@@ -509,7 +525,7 @@ export default function Sidebar() {
                   gap: '6px'
                 }}>
                   <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '4px', fontWeight: 600, color: '#475569' }}>
-                    🔍 API DEBUG INFO
+                    ðŸ” API DEBUG INFO
                   </div>
                   <div>
                     <span style={{ fontWeight: 600, color: '#64748b' }}>Request URL:</span> {apiDebugInfo.url}
@@ -543,6 +559,58 @@ export default function Sidebar() {
               )}
             </div>
           )/* Error Banner Close */}
+
+          {/* Success Banner */}
+          {successMessage && (
+            <div style={{
+              background: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              borderRadius: '8px',
+              padding: '12px 14px',
+              color: '#065f46',
+              fontSize: '13px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <Check size={16} style={{ flexShrink: 0, marginTop: '2px', color: '#059669' }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600 }}>Success</div>
+                  <div style={{ marginTop: '2px', fontSize: '12px', opacity: 0.9 }}>{successMessage}</div>
+                </div>
+                <button 
+                  type="button"
+                  ref={(el) => {
+                    if (el) {
+                      if ((el as any)._signalflow_click_listener) {
+                        el.removeEventListener('click', (el as any)._signalflow_click_listener);
+                      }
+                      const listener = () => {
+                        setSuccessMessage(null);
+                      };
+                      (el as any)._signalflow_click_listener = listener;
+                      el.addEventListener('click', listener);
+                    }
+                  }}
+                  onClick={() => setSuccessMessage(null)}
+                  style={{ 
+                    border: 'none', 
+                    background: 'none', 
+                    color: '#065f46', 
+                    cursor: 'pointer', 
+                    fontWeight: 'bold', 
+                    fontSize: '14px',
+                    padding: '0 4px',
+                    lineHeight: 1
+                  }}
+                >
+                  Ã—
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* CONNECTION INFO PANEL */}
           <div style={{
@@ -700,7 +768,7 @@ export default function Sidebar() {
                             }}
                           />
                           <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>
-                            ⚠️ Required to analyze lead
+                            âš ï¸ Required to analyze lead
                           </div>
                         </div>
                       )}
@@ -927,7 +995,7 @@ export default function Sidebar() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '11.5px', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                      <DollarSign size={11} /> Budget Min (₹)
+                      <DollarSign size={11} /> Budget Min (â‚¹)
                     </label>
                     <input 
                       type="number" 
@@ -938,7 +1006,7 @@ export default function Sidebar() {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '11.5px', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                      <DollarSign size={11} /> Budget Max (₹)
+                      <DollarSign size={11} /> Budget Max (â‚¹)
                     </label>
                     <input 
                       type="number" 
@@ -1032,9 +1100,9 @@ export default function Sidebar() {
                       onChange={e => setIntelligence({...intelligence, leadTemperature: e.target.value})}
                       style={{ padding: '8px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600 }}
                     >
-                      <option value="HOT" style={{ color: '#ef4444', fontWeight: 'bold' }}>🔥 HOT</option>
-                      <option value="WARM" style={{ color: '#f59e0b', fontWeight: 'bold' }}>⚡ WARM</option>
-                      <option value="COLD" style={{ color: '#3b82f6', fontWeight: 'bold' }}>❄️ COLD</option>
+                      <option value="HOT" style={{ color: '#ef4444', fontWeight: 'bold' }}>ðŸ”¥ HOT</option>
+                      <option value="WARM" style={{ color: '#f59e0b', fontWeight: 'bold' }}>âš¡ WARM</option>
+                      <option value="COLD" style={{ color: '#3b82f6', fontWeight: 'bold' }}>â„ï¸ COLD</option>
                     </select>
                   </div>
                 </div>
@@ -1248,7 +1316,7 @@ export default function Sidebar() {
                         
                         <div style={{ display: 'flex', gap: '8px', fontSize: '11.5px', color: '#64748b' }}>
                           <span>{rec.type}</span>
-                          <span>•</span>
+                          <span>â€¢</span>
                           <span>{rec.sector}</span>
                         </div>
 
@@ -1260,7 +1328,7 @@ export default function Sidebar() {
                           paddingTop: '6px',
                           marginTop: '2px' 
                         }}>
-                          ₹{rec.price.toLocaleString()} / mo
+                          â‚¹{rec.price.toLocaleString()} / mo
                         </div>
                       </div>
                     ))
@@ -1322,3 +1390,5 @@ export default function Sidebar() {
     </>
   );
 }
+
+
