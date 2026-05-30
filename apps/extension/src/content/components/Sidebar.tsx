@@ -76,7 +76,7 @@ export default function Sidebar() {
         setLeadName(name);
 
         if (name) {
-          const msgs = WhatsAppParser.extractMessages(200);
+          const msgs = WhatsAppParser.extractMessages(1000);
           setMessages((prev) => JSON.stringify(prev) !== JSON.stringify(msgs) ? msgs : prev);
         } else {
           setMessages([]);

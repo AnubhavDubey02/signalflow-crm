@@ -34,7 +34,7 @@ export const LeadIntelligenceSchema = z.object({
 
 export const AnalysisRequestSchema = z.object({
   whatsappPhone: z.string().min(10, 'Invalid phone number format'),
-  chatPayload: z.array(ChatMessageSchema).min(1, 'Chat payload cannot be empty').max(500, 'Payload too large'),
+  chatPayload: z.array(ChatMessageSchema).min(1, 'Chat payload cannot be empty').max(1000, 'Payload too large'),
 });
 
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
